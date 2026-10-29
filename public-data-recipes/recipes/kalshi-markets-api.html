@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read open Kalshi prediction-market prices (public API) · Public Data Recipes</title>
+<meta name="description" content="Kalshi is a CFTC-regulated US exchange. Its market-data endpoints are public, so reading prices needs no login.">
+<link rel="canonical" href="https://liorablyth.github.io/public-data-recipes/recipes/kalshi-markets-api.html">
+<link rel="stylesheet" href="../style.css">
+</head><body>
+<header class="top"><a class="brand" href="../index.html">Public Data Recipes</a>
+<nav><a href="../index.html#recipes">Recipes</a><a href="../tools.html">Tools</a><a href="../sponsor.html">Sponsor</a><a href="../about.html">About</a></nav></header>
+<main><article class="recipe">
+<p class="crumb"><a href="../index.html#recipes">Recipes</a> / Markets</p>
+<h1>Read open Kalshi prediction-market prices (public API)</h1>
+<p class="meta">Tested by hand on 2026-10-29 · No API key needed · <a href="https://docs.kalshi.com/" rel="nofollow">Official docs</a></p>
+<p>Kalshi is a CFTC-regulated US exchange. Its market-data endpoints are public, so reading prices needs no login.</p>
+<h2>Endpoint</h2><pre><code>https://api.elections.kalshi.com/trade-api/v2/events?status=open&amp;with_nested_markets=true</code></pre>
+<h2>Steps</h2><ol><li>Use <code>/events?with_nested_markets=true</code> to get readable event titles with their markets.</li><li>Prices come as dollar strings, for example <code>yes_bid_dollars</code> "0.66", which means 66% implied.</li><li>Page through with the <code>cursor</code> value from each response.</li></ol>
+<h2>Copy-paste Python (standard library only)</h2>
+<pre><code>import json, urllib.request
+
+# events with their markets nested; one request = one page (use &quot;cursor&quot; for the next page)
+url = &quot;https://api.elections.kalshi.com/trade-api/v2/events?status=open&amp;limit=20&amp;with_nested_markets=true&quot;
+data = json.load(urllib.request.urlopen(url, timeout=30))
+
+for e in data[&quot;events&quot;][:5]:
+    m = e[&quot;markets&quot;][0]
+    print(e[&quot;category&quot;], &quot;|&quot;, e[&quot;title&quot;][:60], &quot;| yes bid $&quot;, m[&quot;yes_bid_dollars&quot;])
+print(&quot;next page cursor present:&quot;, bool(data.get(&quot;cursor&quot;)))
+</code></pre>
+<p class="ok">Last test result: Open events across categories (Science, Elections, Climate…) returned, with a next-page cursor.</p>
+<h2>AI prompt</h2><pre class="prompt">Given this JSON from the Kalshi events API: [json]. Make a table of event title, category and implied probability (yes_bid_dollars × 100). Flag markets whose yes bid moved more than 10 points versus [yesterday.json]. This is for information only, not trading advice.</pre>
+<div class="cta"><strong>No-code option:</strong> our <a href="https://apify.com/liora-tools/prediction-markets">prediction-markets</a> Apify Actor does this for you: scheduled snapshots of market prices for tracking over time. <span class="disc">(We built it and earn from its usage.)</span></div>
+<h2>Be a good citizen</h2><ul><li>Follow the provider's terms and rate limits. Make one request at a time and cache the results.</li><li>If you get 401, 403, 429 or a captcha, stop. Don't try to get around it.</li><li>Handle personal data under GDPR/CCPA. Collect only the fields you need.</li></ul>
+<aside class="slot">Sponsor slot available. <a href="../sponsor.html">Put your data or dev tool here</a>.</aside>
+</article></main>
+<footer><p>Built by <a href="https://apify.com/liora-tools">Liora Tools</a>. AI tools helped draft and check this site, and a person tested every recipe. <a href="../about.html#ai">How we use AI</a>.</p>
+<p>Only official or public endpoints. We don't publish guides to getting past logins, captchas or anti-bot systems.</p></footer>
+</body></html>

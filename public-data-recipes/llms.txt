@@ -1,0 +1,12 @@
+# Public Data Recipes
+
+> Hand-tested recipes for reading official public JSON endpoints. AI-assisted writing; every code sample tested by a person.
+
+## Recipes
+- [Greenhouse job board API](https://liorablyth.github.io/public-data-recipes/recipes/greenhouse-job-board-api.html): Get every open job from a Greenhouse job board (official JSON API)
+- [Lever postings API](https://liorablyth.github.io/public-data-recipes/recipes/lever-postings-api.html): Read a company's Lever job postings as JSON
+- [Ashby posting API](https://liorablyth.github.io/public-data-recipes/recipes/ashby-job-board-api.html): Pull open roles from an Ashby job board
+- [Shopify products.json](https://liorablyth.github.io/public-data-recipes/recipes/shopify-products-json.html): List a Shopify store's products with /products.json
+- [HN Who is Hiring via Algolia API](https://liorablyth.github.io/public-data-recipes/recipes/hacker-news-who-is-hiring-api.html): Get every "Who is hiring?" post from Hacker News
+- [Kalshi public market data](https://liorablyth.github.io/public-data-recipes/recipes/kalshi-markets-api.html): Read open Kalshi prediction-market prices (public API)
+- [NYC DOB permits (Socrata)](https://liorablyth.github.io/public-data-recipes/recipes/nyc-building-permits-api.html): Query NYC building permits from NYC Open Data

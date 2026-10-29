@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>List a Shopify store&#x27;s products with /products.json · Public Data Recipes</title>
+<meta name="description" content="Most Shopify storefronts serve their public catalog at /products.json. It has titles, variants, prices and images, with no key needed.">
+<link rel="canonical" href="https://liorablyth.github.io/public-data-recipes/recipes/shopify-products-json.html">
+<link rel="stylesheet" href="../style.css">
+</head><body>
+<header class="top"><a class="brand" href="../index.html">Public Data Recipes</a>
+<nav><a href="../index.html#recipes">Recipes</a><a href="../tools.html">Tools</a><a href="../sponsor.html">Sponsor</a><a href="../about.html">About</a></nav></header>
+<main><article class="recipe">
+<p class="crumb"><a href="../index.html#recipes">Recipes</a> / E-commerce</p>
+<h1>List a Shopify store&#x27;s products with /products.json</h1>
+<p class="meta">Tested by hand on 2026-10-29 · No API key needed · <a href="https://shopify.dev/docs/storefronts/themes/architecture/templates/product#the-product-object" rel="nofollow">Official docs</a></p>
+<p>Most Shopify storefronts serve their public catalog at <code>/products.json</code>. It has titles, variants, prices and images, with no key needed.</p>
+<h2>Endpoint</h2><pre><code>https://{store}/products.json?limit=250&amp;page={n}</code></pre>
+<h2>Steps</h2><ol><li>Check the store is on Shopify: <code>/products.json</code> returns JSON with a <code>products</code> array.</li><li>Read pages with <code>limit=250&amp;page=N</code> until a page comes back empty. Go one request at a time.</li><li>Price lives in <code>variants[].price</code>. The product URL is <code>/products/&lt;handle&gt;</code>.</li><li>Some stores turn this off or rate-limit it. If you get 404, 401 or 430, stop. Don't try to work around it.</li></ol>
+<h2>Copy-paste Python (standard library only)</h2>
+<pre><code>import json, urllib.request
+
+STORE = &quot;https://www.allbirds.com&quot;  # any Shopify storefront
+products, page = [], 1
+while page &lt;= 3:  # be polite: a few pages, one request at a time
+    url = f&quot;{STORE}/products.json?limit=250&amp;page={page}&quot;
+    req = urllib.request.Request(url, headers={&quot;User-Agent&quot;: &quot;Mozilla/5.0&quot;})
+    batch = json.load(urllib.request.urlopen(req, timeout=30))[&quot;products&quot;]
+    if not batch:
+        break
+    products += batch
+    page += 1
+
+for p in products[:5]:
+    print(p[&quot;title&quot;], &quot;|&quot;, p[&quot;variants&quot;][0][&quot;price&quot;], &quot;|&quot;, f&quot;{STORE}/products/{p[&#x27;handle&#x27;]}&quot;)
+print(len(products), &quot;products read&quot;)
+</code></pre>
+<p class="ok">Last test result: 356 products read from <code>allbirds.com</code> (3 pages).</p>
+<h2>AI prompt</h2><pre class="prompt">Write a polite Python script that reads /products.json from these Shopify stores: [urls]. Save title, vendor, variant title, price, compare_at_price and URL to CSV. Wait 2 seconds between requests and stop on any non-200 status.</pre>
+<div class="cta"><strong>No-code option:</strong> our <a href="https://apify.com/liora-tools/shopify-woocommerce-products">shopify-woocommerce-products</a> Apify Actor does this for you: Shopify and WooCommerce catalogs, with change tracking. <span class="disc">(We built it and earn from its usage.)</span></div>
+<h2>Be a good citizen</h2><ul><li>Follow the provider's terms and rate limits. Make one request at a time and cache the results.</li><li>If you get 401, 403, 429 or a captcha, stop. Don't try to get around it.</li><li>Handle personal data under GDPR/CCPA. Collect only the fields you need.</li></ul>
+<aside class="slot">Sponsor slot available. <a href="../sponsor.html">Put your data or dev tool here</a>.</aside>
+</article></main>
+<footer><p>Built by <a href="https://apify.com/liora-tools">Liora Tools</a>. AI tools helped draft and check this site, and a person tested every recipe. <a href="../about.html#ai">How we use AI</a>.</p>
+<p>Only official or public endpoints. We don't publish guides to getting past logins, captchas or anti-bot systems.</p></footer>
+</body></html>

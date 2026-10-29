@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /_build/
+Disallow: /research/
+Disallow: /founder/
+Sitemap: https://liorablyth.github.io/public-data-recipes/sitemap.xml

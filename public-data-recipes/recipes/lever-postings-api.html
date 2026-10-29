@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a company&#x27;s Lever job postings as JSON · Public Data Recipes</title>
+<meta name="description" content="Lever&#x27;s postings API is the public feed behind jobs.lever.co pages. You don&#x27;t need a key to read it.">
+<link rel="canonical" href="https://liorablyth.github.io/public-data-recipes/recipes/lever-postings-api.html">
+<link rel="stylesheet" href="../style.css">
+</head><body>
+<header class="top"><a class="brand" href="../index.html">Public Data Recipes</a>
+<nav><a href="../index.html#recipes">Recipes</a><a href="../tools.html">Tools</a><a href="../sponsor.html">Sponsor</a><a href="../about.html">About</a></nav></header>
+<main><article class="recipe">
+<p class="crumb"><a href="../index.html#recipes">Recipes</a> / Jobs</p>
+<h1>Read a company&#x27;s Lever job postings as JSON</h1>
+<p class="meta">Tested by hand on 2026-10-29 · No API key needed · <a href="https://github.com/lever/postings-api" rel="nofollow">Official docs</a></p>
+<p>Lever's postings API is the public feed behind <code>jobs.lever.co</code> pages. You don't need a key to read it.</p>
+<h2>Endpoint</h2><pre><code>https://api.lever.co/v0/postings/{company}?mode=json</code></pre>
+<h2>Steps</h2><ol><li>Get the slug from <code>jobs.lever.co/&lt;slug&gt;</code>.</li><li>Call <code>/v0/postings/&lt;slug&gt;?mode=json</code>. Add <code>&amp;skip=0&amp;limit=100</code> to page through long lists.</li><li>Useful fields: <code>text</code> (title), <code>categories.location</code>, <code>categories.team</code>, <code>hostedUrl</code>, <code>createdAt</code> (ms epoch) and <code>workplaceType</code>.</li></ol>
+<h2>Copy-paste Python (standard library only)</h2>
+<pre><code>import json, urllib.request
+
+COMPANY = &quot;palantir&quot;  # the slug in jobs.lever.co/&lt;slug&gt;
+url = f&quot;https://api.lever.co/v0/postings/{COMPANY}?mode=json&quot;
+jobs = json.load(urllib.request.urlopen(url, timeout=30))
+
+for job in jobs[:5]:
+    loc = job.get(&quot;categories&quot;, {}).get(&quot;location&quot;, &quot;&quot;)
+    print(job[&quot;text&quot;], &quot;|&quot;, loc, &quot;|&quot;, job[&quot;hostedUrl&quot;])
+print(len(jobs), &quot;open roles&quot;)
+</code></pre>
+<p class="ok">Last test result: 304 open roles returned for the company <code>palantir</code>.</p>
+<h2>AI prompt</h2><pre class="prompt">Using the public Lever postings API (https://api.lever.co/v0/postings/&lt;slug&gt;?mode=json), write a script that lists new postings since yesterday for these companies: [slugs]. createdAt is in milliseconds.</pre>
+<div class="cta"><strong>No-code option:</strong> our <a href="https://apify.com/liora-tools/ats-career-site-jobs">ats-career-site-jobs</a> Apify Actor does this for you: the same output format across Lever, Greenhouse and Ashby. <span class="disc">(We built it and earn from its usage.)</span></div>
+<h2>Be a good citizen</h2><ul><li>Follow the provider's terms and rate limits. Make one request at a time and cache the results.</li><li>If you get 401, 403, 429 or a captcha, stop. Don't try to get around it.</li><li>Handle personal data under GDPR/CCPA. Collect only the fields you need.</li></ul>
+<aside class="slot">Sponsor slot available. <a href="../sponsor.html">Put your data or dev tool here</a>.</aside>
+</article></main>
+<footer><p>Built by <a href="https://apify.com/liora-tools">Liora Tools</a>. AI tools helped draft and check this site, and a person tested every recipe. <a href="../about.html#ai">How we use AI</a>.</p>
+<p>Only official or public endpoints. We don't publish guides to getting past logins, captchas or anti-bot systems.</p></footer>
+</body></html>

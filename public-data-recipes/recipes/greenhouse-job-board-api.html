@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Get every open job from a Greenhouse job board (official JSON API) · Public Data Recipes</title>
+<meta name="description" content="Thousands of companies host careers pages on Greenhouse. The Job Board API is public and read-only, needs no key, and returns every listed role as JSON.">
+<link rel="canonical" href="https://liorablyth.github.io/public-data-recipes/recipes/greenhouse-job-board-api.html">
+<link rel="stylesheet" href="../style.css">
+</head><body>
+<header class="top"><a class="brand" href="../index.html">Public Data Recipes</a>
+<nav><a href="../index.html#recipes">Recipes</a><a href="../tools.html">Tools</a><a href="../sponsor.html">Sponsor</a><a href="../about.html">About</a></nav></header>
+<main><article class="recipe">
+<p class="crumb"><a href="../index.html#recipes">Recipes</a> / Jobs</p>
+<h1>Get every open job from a Greenhouse job board (official JSON API)</h1>
+<p class="meta">Tested by hand on 2026-10-29 · No API key needed · <a href="https://developers.greenhouse.io/job-board.html" rel="nofollow">Official docs</a></p>
+<p>Thousands of companies host careers pages on Greenhouse. The Job Board API is public and read-only, needs no key, and returns every listed role as JSON.</p>
+<h2>Endpoint</h2><pre><code>https://boards-api.greenhouse.io/v1/boards/{board}/jobs</code></pre>
+<h2>Steps</h2><ol><li>Find the board slug: open the company's careers page. If it links to <code>job-boards.greenhouse.io/&lt;slug&gt;</code>, that slug is the board.</li><li>Call <code>/v1/boards/&lt;slug&gt;/jobs</code>. Add <code>?content=true</code> if you also need job descriptions.</li><li>Each job has <code>title</code>, <code>location.name</code>, <code>absolute_url</code>, <code>updated_at</code> and <code>first_published</code>.</li></ol>
+<h2>Copy-paste Python (standard library only)</h2>
+<pre><code>import json, urllib.request
+
+BOARD = &quot;gitlab&quot;  # the slug in job-boards.greenhouse.io/&lt;slug&gt;
+url = f&quot;https://boards-api.greenhouse.io/v1/boards/{BOARD}/jobs&quot;
+data = json.load(urllib.request.urlopen(url, timeout=30))
+
+for job in data[&quot;jobs&quot;][:5]:
+    print(job[&quot;title&quot;], &quot;|&quot;, job[&quot;location&quot;][&quot;name&quot;], &quot;|&quot;, job[&quot;absolute_url&quot;])
+print(len(data[&quot;jobs&quot;]), &quot;open roles&quot;)
+</code></pre>
+<p class="ok">Last test result: 232 open roles returned for the board <code>gitlab</code>.</p>
+<h2>AI prompt</h2><pre class="prompt">Write a Python script that reads the Greenhouse Job Board API for these board slugs: [slugs]. Output one CSV row per job with company, title, location, URL and first_published. Use only the standard library, add a 1-second pause between boards, and skip boards that return 404.</pre>
+<div class="cta"><strong>No-code option:</strong> our <a href="https://apify.com/liora-tools/ats-career-site-jobs">ats-career-site-jobs</a> Apify Actor does this for you: Greenhouse, Lever, Ashby and more in one run, with no code needed. <span class="disc">(We built it and earn from its usage.)</span></div>
+<h2>Be a good citizen</h2><ul><li>Follow the provider's terms and rate limits. Make one request at a time and cache the results.</li><li>If you get 401, 403, 429 or a captcha, stop. Don't try to get around it.</li><li>Handle personal data under GDPR/CCPA. Collect only the fields you need.</li></ul>
+<aside class="slot">Sponsor slot available. <a href="../sponsor.html">Put your data or dev tool here</a>.</aside>
+</article></main>
+<footer><p>Built by <a href="https://apify.com/liora-tools">Liora Tools</a>. AI tools helped draft and check this site, and a person tested every recipe. <a href="../about.html#ai">How we use AI</a>.</p>
+<p>Only official or public endpoints. We don't publish guides to getting past logins, captchas or anti-bot systems.</p></footer>
+</body></html>
